@@ -6,6 +6,8 @@ load_dotenv()
 
 WEATHER_FORECASET_API = os.getenv("WEATHER_FORECASET_API")
 
+MONGO_DB_API = os.getenv("MONGO_DB_API")
+
 base_url = "http://api.openweathermap.org/data/2.5/weather?"
 
 def weatherforecastusingopenweatherapi(city_name):
@@ -24,11 +26,19 @@ weatherforecast = weatherforecastusingopenweatherapi(city_name)
 # print(type(weatherforecast))
 # print(weatherforecast)
 
+def kelvinToCelsius(kelvin):
+    return kelvin - 273.15
+
+def metertokilometer(visibility):
+    return visibility / 1000
+
 if weatherforecast["cod"] != "404":
 
     main = weatherforecast["main"]
 
     temperature = main["temp"]
+
+    temperature_celsius = kelvinToCelsius(temperature)
 
     humidity = main["humidity"]
 
@@ -36,16 +46,25 @@ if weatherforecast["cod"] != "404":
 
     report = weatherforecast["weather"]
 
+    description = report[0]["description"]
+
+    visibility_km = metertokilometer(weatherforecast["visibility"])
+
+
 
     print(f"{city_name:_^30}")
 
     print(f"main: {report[0]['main']}")
-    print(f"Temperature: {temperature}")
-    print(f"Humidity: {humidity}")
-    print(f"Pressure: {pressure}")  
+    print(f"Temperature: {round(temperature_celsius, 2)} °C")
+    print(f"Weather Report: {description}")
+    print(f"Humidity: {humidity}%")
+    print(f"Pressure: {pressure} hPa")  
+    print(f"Visibility: {visibility_km} km")
+
+    
 
 else:
     print("City Not Found")
 
-city_vis = requests.get(f'http://wttr.in/{city_name}', headers={'user-agent':'curl'})
-print(city_vis.text)
+# city_vis = requests.get(f'http://wttr.in/{city_name}', headers={'user-agent':'curl'})
+# print(city_vis.text)
